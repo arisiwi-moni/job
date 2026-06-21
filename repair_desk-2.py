@@ -42,3 +42,57 @@ class RepairData:
         }
         self.requests.append(new_request)
         return new_request
+
+# === Stage 2: Добавь модели данных и функции валидации пользовательского ввода ===
+# Project: RepairDesk
+class RepairData:
+    def __init__(self):
+        self.devices = {}
+        self.diagnostics = []
+        self.parts = {}
+    
+    def validate_device_name(self, name):
+        if not isinstance(name, str) or len(name.strip()) < 2:
+            raise ValueError("Имя устройства должно быть строкой длиной не менее 2 символов.")
+        return name.strip()
+    
+    def add_device(self, name, model, serial_number):
+        validated_name = self.validate_device_name(name)
+        if not isinstance(model, str) or len(model) < 3:
+            raise ValueError("Модель устройства должна быть строкой длиной не менее 3 символов.")
+        if not isinstance(serial_number, str) or len(serial_number) > 20:
+            raise ValueError("Серийный номер должен быть строкой длиной до 20 символов.")
+        
+        self.devices[validated_name] = {
+            "model": model,
+            "serial_number": serial_number,
+            "status": "active"
+        }
+    
+    def add_diagnostic(self, device_name: str, issue_type: str, description: str):
+        if not isinstance(issue_type, str) or len(issue_type) < 2:
+            raise ValueError("Тип проблемы должен быть строкой длиной не менее 2 символов.")
+        
+        if device_name not in self.devices:
+            raise KeyError(f"Устройство '{device_name}' не найдено в системе.")
+        
+        self.diagnostics.append({
+            "device": device_name,
+            "issue_type": issue_type,
+            "description": description,
+            "timestamp": datetime.now().isoformat()
+        })
+    
+    def add_part(self, part_name: str, price: float):
+        if not isinstance(part_name, str) or len(part_name.strip()) < 2:
+            raise ValueError("Название запчасти должно быть строкой длиной не менее 2 символов.")
+        
+        if not isinstance(price, (int, float)) or price <= 0:
+            raise ValueError("Цена запчасти должна быть положительным числом.")
+        
+        self.parts[part_name.strip()] = {
+            "price": float(price),
+            "stock_count": 100
+        }
+
+import datetime
